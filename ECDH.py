@@ -11,7 +11,7 @@ class ECDH:
 
     @staticmethod
     def generateRandomPrivateKey() -> None:
-        return random.randint(1, EC.params.n)
+        return random.randint(1, EC.params.p)
 
     def generateSharedKey(self, otherPublicKey: EC) -> tuple[int, int]:
         if self._privateKey == None:
