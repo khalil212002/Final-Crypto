@@ -4,20 +4,14 @@ from EC import EC
 
 class ECDH:
 
-    def __init__(self):
-        self._privateKey = None
-        self._publicKey = None
+    def __init__(self, privateKey=None):
+        self._privateKey = privateKey
+        self._publicKey = EC.params.G * self._privateKey
         self._sharedKey = None
 
-    def generatePrivateKey(self, key=None) -> None:
-        if key == None:
-            key = random.randint(1, EC.params.n - 1)
-        self._privateKey = key
-
-    def generatePublicKey(self) -> None:
-        if self._privateKey == None:
-            raise Exception("Private key not generated")
-        self._publicKey = EC.params.G * self._privateKey
+    @staticmethod
+    def generateRandomPrivateKey() -> None:
+        return random.randint(1, EC.params.n)
 
     def generateSharedKey(self, otherPublicKey: EC) -> tuple[int, int]:
         if self._privateKey == None:
@@ -42,14 +36,8 @@ class ECDH:
 
 
 # # example how to use
-# alice = ECDH()
-# bob = ECDH()
-
-# alice.generatePrivateKey()
-# alice.generatePublicKey()
-
-# bob.generatePrivateKey()
-# bob.generatePublicKey()
+# alice = ECDH(ECDH.generateRandomPrivateKey())
+# bob = ECDH(ECDH.generateRandomPrivateKey())
 
 # alice.generateSharedKey(bob.getPublicKey())
 # bob.generateSharedKey(alice.getPublicKey())
