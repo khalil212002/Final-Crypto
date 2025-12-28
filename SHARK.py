@@ -62,35 +62,38 @@ class SHARK:
         iv = self._encryptIv(self._iv)
         out = bytearray()
         for i in range(0, len(data), 8):
-            out += bytearray([GF_SUM(data[i + b], iv[b]) for b in range(8)])
+            out += bytearray(
+                [GF_SUM(data[i + b], iv[b]) for b in range(min(8, len(data) - i))]
+            )
             iv = self._encryptIv(iv)
         return bytearray(out)
 
-    def _pad(self, data: bytearray):
-        delta = 8 - (len(data) % 8)
-        data += bytearray([delta] * delta)
-        return data
+    # def _pad(self, data: bytearray):
+    #     delta = 8 - (len(data) % 8)
+    #     data += bytearray([delta] * delta)
+    #     return data
 
-    def _unpad(self, data: bytearray):
-        delta = data[-1]
-        return data[:-delta]
+    # def _unpad(self, data: bytearray):
+    #     delta = data[-1]
+    #     return data[:-delta]
 
     def encrypt(self, data: bytearray):
-        data = self._pad(data)
+        # data = self._pad(data)
         return self._encryptDecrypt(data)
 
     def decrypt(self, data: bytearray):
-        return self._unpad(self._encryptDecrypt(data))
+        # return self._unpad(self._encryptDecrypt(data))
+        return self._encryptDecrypt(data)
 
 
-# #Example code
+# # Example code
 # x = SHARK(SHARK.generateRandomKey(), random.randbytes(8))
 
-# data = b"khalil test messageasdgfadsgfdsg"
+# data = b"khalil test messageasdgfadsgfdsga"
 # print(data, len(data))
 
 # encrypted = x.encrypt(data)
-# print(encrypted.hex())
+# print(encrypted.hex(), len(encrypted))
 
 # decrypted = x.decrypt(encrypted)
 # print(decrypted)
