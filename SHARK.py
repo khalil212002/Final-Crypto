@@ -1,4 +1,4 @@
-import random
+import secrets
 from GF import GF_INV, GF_MT_VEC_MUL, GF_SUM
 
 
@@ -29,7 +29,11 @@ class SHARK:
 
     @staticmethod
     def generateRandomKey():
-        return random.randbytes(16).hex()
+        return secrets.token_hex(16)
+
+    @staticmethod
+    def generateRandomIv():
+        return secrets.token_hex(8)
 
     def __init__(self, key, iv):
         self._iv = iv
@@ -87,7 +91,7 @@ class SHARK:
 
 
 # # Example code
-# x = SHARK(SHARK.generateRandomKey(), random.randbytes(8))
+# x = SHARK(SHARK.generateRandomKey(), secrets.token_bytes(8))
 
 # data = b"khalil test messageasdgfadsgfdsga"
 # print(data, len(data))
