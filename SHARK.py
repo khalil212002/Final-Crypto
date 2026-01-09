@@ -33,7 +33,7 @@ class SHARK:
 
     @staticmethod
     def generateRandomIv():
-        return secrets.token_hex(8)
+        return secrets.token_bytes(8)
 
     def __init__(self, key, iv):
         self._iv = iv
