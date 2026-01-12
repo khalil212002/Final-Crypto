@@ -44,12 +44,13 @@ def main():
     # connecting to server
     client.connect(("localhost", int(sys.argv[1])))
 
-    # start diffie hellman
-    print("\nDiffie Hellman For Encryption\n")
-    sharedKeyEnc = DiffieHellman(client)
-    encKey = sharedKeyEnc
-    print("\nSCHNORR for Signing\n")
+    # start schnorr
+    print("\nStart SCHNORR for Signing\n")
     schnorr = SCH(client)
+    # start diffie hellman
+    print("\nStart Diffie Hellman For Encryption\n")
+    sharedKeyEnc = DiffieHellman(client, schnorr)
+    encKey = sharedKeyEnc
 
     print("Secure Email Started")
     # start chat
@@ -84,18 +85,26 @@ def SCH(client):
     return sch
 
 
-def DiffieHellman(client):
+def DiffieHellman(client, schnorr):
+    global verifyKey
     time.sleep(1)
     private = ECDH.ECDH.generateRandomPrivateKey()
     df = ECDH.ECDH(private)
     print("Private:", private)
     print("Public:", df.getPublicKey().getPoint())
+    signutre = schnorr.sign(str(df.getPublicKey().getPoint()).encode())
+    print("signiture:", signutre)
     time.sleep(1)
-    client.send(str(df.getPublicKey().getPoint()).encode())
-    otherPublic = client.recv(1024 * 4).decode()
+    keyAndSign = (df.getPublicKey().getPoint(), signutre)
+    client.send((str(keyAndSign)).encode())
+    otherData = eval(client.recv(1024 * 4).decode())
+    otherPublic = otherData[0]
+    otherSigniture = otherData[1]
     print("other's public key:", otherPublic)
-    otherPublic = eval(otherPublic)
     df.generateSharedKey(EC.EC(otherPublic))
+    print("other's signiture:", otherSigniture)
+    sig = schnorr.verify(str(otherPublic).encode(), otherSigniture, verifyKey)
+    print("Others public key signiture verified as valid:", sig)
     print("Shared key:", df.getSharedKey())
     hx = (
         (df.getSharedKey().getPoint()[0] ^ df.getSharedKey().getPoint()[1])
