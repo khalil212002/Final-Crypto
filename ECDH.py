@@ -1,4 +1,4 @@
-import random
+import secrets
 from EC import EC
 
 
@@ -11,7 +11,7 @@ class ECDH:
 
     @staticmethod
     def generateRandomPrivateKey() -> None:
-        return random.randint(1, EC.params.n - 1)
+        return secrets.randbelow(EC.params.n + 1) + 1
 
     def generateSharedKey(self, otherPublicKey: EC) -> tuple[int, int]:
         if self._privateKey == None:
